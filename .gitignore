@@ -1,0 +1,13 @@
+target/
+node_modules/
+dist/
+coverage/
+*.log
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+.env
+.env.local
+stats.html
+.codex/
