@@ -8,7 +8,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +38,40 @@ class ExamScoringSupportTest {
         assertEquals(12, result.getQuestionScoreMap().get(2L));
         assertNull(result.getQuestionCorrectMap().get(2L));
         assertEquals("{\"overall\":\"ok\"}", result.getQuestionFeedbackMap().get(2L));
+    }
+
+    @Test
+    void skipsObjectiveQuestionWhenCorrectAnswerBlank() {
+        Question choice = question(1L, "single_choice", "  ", 10, "content");
+
+        ExamScoringSupport.ObjectiveGrade grade = ExamScoringSupport.gradeObjective(choice, "A", true);
+
+        assertFalse(grade.isScored());
+        assertEquals(0, grade.getScore());
+    }
+
+    @Test
+    void recordSubmissionModeKeepsLegacyEqualityForBlankAnswers() {
+        Question choice = question(1L, "single_choice", "  ", 10, "content");
+
+        ExamScoringSupport.ObjectiveGrade blankGrade = ExamScoringSupport.gradeObjective(choice, "   ", false);
+        ExamScoringSupport.ObjectiveGrade nonBlankGrade = ExamScoringSupport.gradeObjective(choice, "A", false);
+
+        assertTrue(blankGrade.isScored());
+        assertTrue(blankGrade.isCorrect());
+        assertEquals(10, blankGrade.getScore());
+        assertFalse(nonBlankGrade.isCorrect());
+        assertEquals(0, nonBlankGrade.getScore());
+    }
+
+    @Test
+    void treatsNullQuestionScoreAsZero() {
+        Question choice = question(1L, "single_choice", "A", null, "content");
+
+        ExamScoringSupport.ObjectiveGrade grade = ExamScoringSupport.gradeObjective(choice, "a", false);
+
+        assertTrue(grade.isCorrect());
+        assertEquals(0, grade.getScore());
     }
 
     private Question question(Long id, String type, String correctAnswer, Integer score, String content) {

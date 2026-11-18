@@ -7,7 +7,6 @@ import com.cet4.platform.entity.ExamRecord;
 import com.cet4.platform.entity.Question;
 import com.cet4.platform.entity.UserAnswer;
 import com.cet4.platform.mapper.ExamMapper;
-import com.cet4.platform.mapper.QuestionMapper;
 import com.cet4.platform.mapper.UserAnswerMapper;
 import com.cet4.platform.vo.AnswerDetailVO;
 import com.cet4.platform.vo.ExamResultVO;
@@ -24,7 +23,7 @@ import org.springframework.stereotype.Component;
 public class ExamResultAssembler {
 
     private final ExamMapper examMapper;
-    private final QuestionMapper questionMapper;
+    private final ExamQuerySupport examQuerySupport;
     private final UserAnswerMapper userAnswerMapper;
     private final JsonSupport jsonSupport;
 
@@ -45,9 +44,7 @@ public class ExamResultAssembler {
                 });
         resultVO.setAnswers(answerMap);
 
-        List<Question> questions = questionMapper.selectList(new LambdaQueryWrapper<Question>()
-                .eq(Question::getExamId, examRecord.getExamId())
-                .orderByAsc(Question::getSortOrder));
+        List<Question> questions = examQuerySupport.listQuestions(examRecord.getExamId());
 
         List<UserAnswer> userAnswers = userAnswerMapper.selectList(new LambdaQueryWrapper<UserAnswer>()
                 .eq(UserAnswer::getExamRecordId, examRecord.getId()));

@@ -1,0 +1,76 @@
+.record-table {
+  --el-table-border-color: transparent;
+  --el-table-header-bg-color: #f9fafb;
+  --el-table-row-hover-bg-color: #f9fafb;
+}
+
+.record-table :deep(.el-table__inner-wrapper::before) {
+  display: none;
+}
+
+.record-table :deep(.el-table__header th) {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 400;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.record-table :deep(.el-table__body td) {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.record-table :deep(.el-table__row) {
+  height: auto;
+}
+
+.record-table :deep(.el-table__body tr:last-child td) {
+  border-bottom: none;
+}
+
+/* ---- Record cell ---- */
+.record-title {
+  color: #111827;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.record-time {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* ---- Score ---- */
+.score-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.score-full {
+  font-size: 12px;
+  color: #6b7280;
+  margin-left: 2px;
+}
+
+/* ---- Report button ---- */
+.report-btn {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: #0f172a;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.report-btn:hover {
+  color: #2563eb;
+  border-color: #2563eb;
+}

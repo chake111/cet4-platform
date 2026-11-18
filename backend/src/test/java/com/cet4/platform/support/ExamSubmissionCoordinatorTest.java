@@ -57,11 +57,11 @@ class ExamSubmissionCoordinatorTest {
                 examRecordAccessSupport,
                 examQuerySupport,
                 examCacheStore,
+                new ExamSubmitLock(examCacheStore),
                 examScoringSupport,
                 examSubmissionWriter,
-                examRecordMapper,
-                questionMapper,
-                userAnswerMapper);
+                new ExamRecordAnswerWriter(questionMapper, userAnswerMapper),
+                examRecordMapper);
     }
 
     @Test

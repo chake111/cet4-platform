@@ -1,8 +1,5 @@
 package com.cet4.platform.service.impl.admin;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cet4.platform.common.BusinessException;
 import com.cet4.platform.dto.admin.AdminQuestionUpsertRequest;
 import com.cet4.platform.entity.Exam;
@@ -12,17 +9,13 @@ import com.cet4.platform.mapper.QuestionMapper;
 import com.cet4.platform.service.admin.AdminQuestionService;
 import com.cet4.platform.support.admin.AdminQuestionContentSupport;
 import com.cet4.platform.support.admin.AdminQuestionContentSupport.ContentParsedResult;
+import com.cet4.platform.support.admin.AdminQuestionPageQuery;
 import com.cet4.platform.support.admin.AdminQuestionViewAssembler;
 import com.cet4.platform.vo.admin.AdminQuestionVO;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +25,7 @@ public class AdminQuestionServiceImpl implements AdminQuestionService {
     private final ExamMapper examMapper;
     private final AdminQuestionContentSupport contentSupport;
     private final AdminQuestionViewAssembler viewAssembler;
+    private final AdminQuestionPageQuery pageQuery;
 
     @Override
     public AdminQuestionVO create(AdminQuestionUpsertRequest request) {
@@ -59,63 +53,7 @@ public class AdminQuestionServiceImpl implements AdminQuestionService {
 
     @Override
     public Map<String, Object> page(Integer current, Integer size, String type, Integer year, Integer month) {
-        LambdaQueryWrapper<Question> wrapper = new LambdaQueryWrapper<>();
-        wrapper.orderByDesc(Question::getId);
-        if (StringUtils.hasText(type)) {
-            wrapper.eq(Question::getQuestionType, type);
-        }
-        if (year != null || month != null) {
-            List<Long> examIds = listExamIds(year, month);
-            if (examIds.isEmpty()) {
-                return emptyPage(current, size);
-            }
-            wrapper.in(Question::getExamId, examIds);
-        }
-
-        IPage<Question> resultPage = questionMapper.selectPage(new Page<>(current, size), wrapper);
-        Map<Long, Exam> examsById = listExamsById(resultPage.getRecords());
-        List<AdminQuestionVO> records = resultPage.getRecords().stream()
-                .map(question -> viewAssembler.toVO(question, examsById.get(question.getExamId())))
-                .toList();
-
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("current", resultPage.getCurrent());
-        result.put("size", resultPage.getSize());
-        result.put("total", resultPage.getTotal());
-        result.put("records", records);
-        return result;
-    }
-
-    private List<Long> listExamIds(Integer year, Integer month) {
-        LambdaQueryWrapper<Exam> wrapper = new LambdaQueryWrapper<>();
-        if (year != null) {
-            wrapper.eq(Exam::getYear, year);
-        }
-        if (month != null) {
-            wrapper.eq(Exam::getMonth, month);
-        }
-        return examMapper.selectList(wrapper).stream().map(Exam::getId).toList();
-    }
-
-    private Map<Long, Exam> listExamsById(List<Question> questions) {
-        List<Long> examIds = questions.stream()
-                .map(Question::getExamId)
-                .distinct()
-                .toList();
-        if (examIds.isEmpty()) {
-            return Map.of();
-        }
-        return examMapper.selectBatchIds(examIds).stream()
-                .collect(Collectors.toMap(Exam::getId, Function.identity()));
-    }
-
-    private Map<String, Object> emptyPage(Integer current, Integer size) {
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("current", current);
-        result.put("size", size);
-        result.put("total", 0L);
-        result.put("records", List.of());
-        return result;
+        return pageQuery.page(current, size, type, year, month);
     }
 
     private Question getById(Long id) {

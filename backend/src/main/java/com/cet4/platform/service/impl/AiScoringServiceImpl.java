@@ -2,6 +2,7 @@ package com.cet4.platform.service.impl;
 
 import com.cet4.platform.service.AiScoringResult;
 import com.cet4.platform.service.AiScoringService;
+import com.cet4.platform.support.AiScoringPromptTemplates;
 import com.cet4.platform.support.AiScoringResponseParser;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -89,58 +90,9 @@ public class AiScoringServiceImpl implements AiScoringService {
 
     private String buildPrompt(String questionType, String content, String answer, int maxScore) {
         if (TRANSLATION.equalsIgnoreCase(questionType)) {
-            return "你是一位专业的大学英语四级考试评卷老师。\n"
-                    + "请根据以下评分标准对学生的汉译英翻译进行评分：\n\n"
-                    + "评分标准：\n"
-                    + "- 忠实原文（50%）：是否准确传达原文意思\n"
-                    + "- 语言表达（30%）：英语是否地道流畅\n"
-                    + "- 词汇语法（20%）：用词和语法是否正确\n\n"
-                    + "特别规则：\n"
-                    + "- 如果答案是乱码、随机字母、无意义内容，直接给 0 分\n"
-                    + "- 如果答案与原文完全无关，最高给 5 分\n\n"
-                    + "题目要求：\n"
-                    + (content == null ? "" : content) + "\n\n"
-                    + "学生答案：\n"
-                    + answer + "\n\n"
-                    + "满分为 " + maxScore + " 分。\n"
-                    + "请严格按以下 JSON 格式返回，不要输出 Markdown，不要输出代码块，不要输出任何其他内容：\n\n"
-                    + "{\n"
-                    + "  \"score\": 85,\n"
-                    + "  \"feedback\": {\n"
-                    + "    \"overall\": \"总体评价，2到3句话。\",\n"
-                    + "    \"accuracy\": \"准确性评价。\",\n"
-                    + "    \"expression\": \"语言表达评价。\",\n"
-                    + "    \"weaknesses\": [\"主要问题1\", \"主要问题2\"],\n"
-                    + "    \"suggestions\": [\"修改建议1\", \"修改建议2\"]\n"
-                    + "  }\n"
-                    + "}";
+            return AiScoringPromptTemplates.translation(content, answer, maxScore);
         }
-
-        return "你是一位专业的大学英语四级考试评卷老师。\n"
-                + "请根据以下评分标准对学生的英语作文进行评分：\n\n"
-                + "评分标准：\n"
-                + "- 内容（40%）：是否切题，论点是否充分\n"
-                + "- 语言（40%）：语法、词汇、句式是否准确丰富\n"
-                + "- 结构（20%）：段落是否清晰，逻辑是否连贯\n\n"
-                + "特别规则：\n"
-                + "- 如果答案是乱码、随机字母、无意义内容，直接给 0 分\n"
-                + "- 如果答案少于 20 个英文单词，最高给 20 分\n"
-                + "- 如果答案与题目完全无关，最高给 10 分\n\n"
-                + "题目要求：\n"
-                + (content == null ? "" : content) + "\n\n"
-                + "学生答案：\n"
-                + answer + "\n\n"
-                + "满分为 " + maxScore + " 分。\n"
-                + "请严格按以下 JSON 格式返回，不要输出 Markdown，不要输出代码块，不要输出任何其他内容：\n\n"
-                + "{\n"
-                + "  \"score\": 85,\n"
-                + "  \"feedback\": {\n"
-                + "    \"overall\": \"总体评价，2到3句话。\",\n"
-                + "    \"strengths\": [\"优点1\", \"优点2\"],\n"
-                + "    \"weaknesses\": [\"问题1\", \"问题2\"],\n"
-                + "    \"suggestions\": [\"改进建议1\", \"改进建议2\"]\n"
-                + "  }\n"
-                + "}";
+        return AiScoringPromptTemplates.writing(content, answer, maxScore);
     }
 
     private String extractContent(Map responseBody) {

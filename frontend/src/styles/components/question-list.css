@@ -1,0 +1,22 @@
+.question-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.question-block {
+  padding: 20px 0;
+  border-top: 1px solid var(--c-border);
+}
+
+.question-block:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.question-no {
+  margin-bottom: 14px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  color: var(--c-accent);
+}

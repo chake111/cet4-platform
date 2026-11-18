@@ -1,0 +1,33 @@
+/* 注意事项区 */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--c-text-primary);
+  margin: 0 0 16px;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rule-item {
+  display: flex;
+  align-items: baseline;
+  padding: 6px 0;
+  line-height: 1.8;
+}
+
+.rule-index {
+  color: var(--c-text-secondary);
+  font-size: 13px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.rule-text {
+  font-size: 14px;
+  color: var(--c-text-primary);
+  line-height: 1.8;
+}
