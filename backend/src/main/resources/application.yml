@@ -2,7 +2,7 @@ spring:
   application:
     name: cet4-backend
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
 management:
   endpoints:

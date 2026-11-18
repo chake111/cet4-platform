@@ -1,0 +1,10 @@
+# 仅服务 deploy/Dockerfile.web 的根构建上下文
+.git
+.github
+backend
+**/node_modules
+**/dist
+**/coverage
+**/*.log
+frontend/stats.html
+frontend/.codex
